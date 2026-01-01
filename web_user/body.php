@@ -171,7 +171,7 @@
                                 <div class="col-xl-3 col-lg-4 col-sm-6 col-12 mb--30 product '.$result['catalog_id'].'">
                                     <div class="axil-product product-style-one">
                                         <div class="thumbnail">
-                                            <a href="fashionApp.php?act=detail_product&id='.$pd['id_product'].'">
+                                            <a href="fashionApp.php?act=detail_product&id='.$result['id_product'].'">
                                                 <img
                                                 class="conform-img"
                                                 data-sal="fade"

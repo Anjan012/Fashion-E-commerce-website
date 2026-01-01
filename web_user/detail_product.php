@@ -1,11 +1,41 @@
   <!-- Start Shop Area  -->
+
+
   <style>
-.active {
+
+    .active {
     background-color: green;
 }
-  </style>
+.axil-product {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.axil-product:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+.product-content {
+    text-align: center;
+}
+</style>
+
+
+  
 
   <?php
+
+    require_once("../model_user/connectdb_user.php");
+    require_once("../model/recommendation.php");
+
+    $conn = connectdb(); // PDO object
+
+    $currentProductId = $detail_product[0]["id_product"];
+
+    $orders = getAllOrdersProducts($conn);
+    $coMatrix = buildCoMatrix($orders);
+    $recommended = recommendItems($currentProductId, $coMatrix, 4);
+
+
+
     // var_dump($detail_product);
     $i = 0;
     echo '
@@ -144,7 +174,59 @@
             </div>
         </div>
     ';
+
+    
+    
 ?>
+
+<h3 class="pl--20 pr--20">Recommended for you</h3>
+<div class="row">
+<?php
+foreach ($recommended as $pid) {
+
+    $stmt = $conn->prepare("
+        SELECT id_product, product_name, product_prices, product_img 
+        FROM tbl_product 
+        WHERE id_product = ?
+    ");
+    $stmt->execute([$pid]);
+    $p = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$p) continue;
+?>
+    <div class="col-lg-3 col-md-4 col-sm-6 mb-4 ">
+        <div class="axil-product product-style-one pl--20 pr--20">
+
+            <div class="thumbnail">
+                <a href="fashionApp.php?act=detail_product&id=<?= $p['id_product'] ?>">
+                    <img src="../uploads/<?= $p['product_img'] ?>" alt="<?= htmlspecialchars($p['product_name']) ?>">
+                </a>
+            </div>
+
+            <div class="product-content">
+                <h5 class="title">
+                    <a href="fashionApp.php?act=detail_product&id=<?= $p['id_product'] ?>">
+                        <?= htmlspecialchars($p['product_name']) ?>
+                    </a>
+                </h5>
+
+                <div class="product-price-variant">
+                    <span class="price current-price">
+                        Rs. <?= number_format($p['product_prices']) ?>
+                    </span>
+                </div>
+
+                <a href="fashionApp.php?act=detail_product&id=<?= $p['id_product'] ?>" 
+                   class="axil-btn btn-sm btn-outline-primary mt-2">
+                    View Product
+                </a>
+            </div>
+
+        </div>
+    </div>
+<?php } ?>
+</div>
+
 
 
   <script>
