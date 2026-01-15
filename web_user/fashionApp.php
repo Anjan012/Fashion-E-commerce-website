@@ -170,6 +170,44 @@ if (isset($_GET['act'])) {
         break;
       }
     case 'check_out_update': {
+    if (isset($_POST['address']) && $_POST['address'] != "") {
+        $address = $_POST['address'];
+        $lname   = $_POST['lname'];
+        $fname   = $_POST['fname'];
+        $phone   = $_POST['phone'];
+        $email   = $_POST['email'];
+        $notes   = isset($_POST['notes']) ? $_POST['notes'] : '';
+        $iddh    = $_POST['iddh'];
+
+        // 1️⃣ Update checkout details
+        update_checkout($address, $lname, $fname, $phone, $iddh, $email, $notes);
+
+        // 2️⃣ Get order total
+        $more_order = getall_order();
+        $total = 0;
+        foreach($more_order as $order) {
+            if($iddh == $order['id']) {
+                $total = $order['total_prices'];
+                break;
+            }
+        }
+
+        // 3️⃣ Store payment info in session
+        $_SESSION['pay_order_id'] = $iddh;
+        $_SESSION['pay_amount'] = $total;
+
+        // 4️⃣ Clear cart
+        if (isset($_SESSION['cart'])) {
+            unset($_SESSION['cart']);
+        }
+
+        // 5️⃣ Show animation and redirect
+        include("process_payment.php");
+        exit;
+    }
+    break;
+}
+    case 'check_out_update': {
         if (isset($_POST['address']) && $_POST['address'] != "") {
           $address = $_POST['address'];
           $lname = $_POST['lname'];

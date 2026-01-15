@@ -52,5 +52,14 @@
         $sql = "UPDATE tbl_order SET lname='".$lname."',fname='".$fname."',email='".$email."',phone='".$phone."',address='".$address."',notes='".$notes."' WHERE id=".$iddh;
         $stmt = $conn->prepare($sql);
         $stmt->execute();
-      }
+    }
+
+    function get_order_by_id($id) {
+        $conn = connectdb();
+        $stmt = $conn->prepare("SELECT * FROM tbl_order WHERE id = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+
 ?>
